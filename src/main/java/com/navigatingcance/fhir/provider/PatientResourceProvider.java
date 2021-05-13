@@ -15,6 +15,9 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class PatientResourceProvider implements IResourceProvider {
@@ -112,22 +115,17 @@ public class PatientResourceProvider implements IResourceProvider {
 
       log.info("findPatientsByName called with {}", theFamilyName);
 
-      LinkedList<Patient> retVal = new LinkedList<Patient>();
-
       /*
        * Look for all patients matching the name
        */
-      for (Deque<Patient> nextPatientList : myIdToPatientVersions.values()) {
-         Patient nextPatient = nextPatientList.getLast();
-         NAMELOOP:
-         for (HumanName nextName : nextPatient.getName()) {
-            String nextFamily = nextName.getFamily();
-            if (theFamilyName.equals(nextFamily)) {
-               retVal.add(nextPatient);
-               break NAMELOOP;
-            }
-         }
-      }
+      String theFamilyNameStr = theFamilyName.asStringValue();
+      Predicate<Patient> doesNameMatch = p -> {
+         return p.getName().stream().anyMatch(nm -> theFamilyNameStr.equals(nm.getFamily()));
+      };
+
+      List<Patient> retVal = new LinkedList<Patient>();
+      retVal = myIdToPatientVersions.values().stream().map(p -> p.getLast()).filter(doesNameMatch)
+            .collect(Collectors.toList());
 
       return retVal;
    }
@@ -135,17 +133,13 @@ public class PatientResourceProvider implements IResourceProvider {
    @Search
    public List<Patient> findPatientsUsingArbitraryCtriteria() {
       log.info("findPatientsUsingArbitraryCtriteria called");
-      
-      LinkedList<Patient> retVal = new LinkedList<Patient>();
 
-      for (Deque<Patient> nextPatientList : myIdToPatientVersions.values()) {
-         Patient nextPatient = nextPatientList.getLast();
-         retVal.add(nextPatient);
-      }
+      List<Patient> retVal = new LinkedList<Patient>();
+
+      retVal = myIdToPatientVersions.values().stream().map(p -> p.getLast()).collect(Collectors.toList());
 
       return retVal;
    }
-
 
    /**
     * The getResourceType method comes from IResourceProvider, and must be overridden to indicate what type of resource this provider supplies.
@@ -182,11 +176,11 @@ public class PatientResourceProvider implements IResourceProvider {
       if (theId.hasVersionIdPart() == false) {
          return retVal.getLast();
       } else {
-         for (Patient nextVersion : retVal) {
-            String nextVersionId = nextVersion.getIdElement().getVersionIdPart();
-            if (theId.getVersionIdPart().equals(nextVersionId)) {
-               return nextVersion;
-            }
+         String searchVer = theId.getVersionIdPart();
+         Optional<Patient> foundVer = 
+            retVal.stream().filter(p -> searchVer.equals(p.getIdElement().getVersionIdPart())).findFirst();
+         if (foundVer.isPresent()) {
+            return foundVer.get();
          }
          // No matching version
          throw new ResourceNotFoundException("Unknown version: " + theId.getValue());
@@ -243,6 +237,4 @@ public class PatientResourceProvider implements IResourceProvider {
          throw new UnprocessableEntityException(FhirContext.forDstu3(), outcome);
       }
    }
-
-    
 }
