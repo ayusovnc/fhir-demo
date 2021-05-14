@@ -13,8 +13,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>14</maven.compiler.source>
-    <maven.compiler.target>14</maven.compiler.target>
+    <maven.compiler.source>15</maven.compiler.source>
+    <maven.compiler.target>15</maven.compiler.target>
     <hapifhir_version>5.0.2</hapifhir_version>
     <jetty_version>10.0.2</jetty_version> <!-- use version 10 to stay with servlet 4 spec -->
     <slf4jVersion>1.7.30</slf4jVersion>
