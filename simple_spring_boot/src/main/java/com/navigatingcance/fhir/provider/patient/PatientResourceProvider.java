@@ -1,6 +1,8 @@
 package com.navigatingcance.fhir.provider.patient;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Patient;
@@ -39,7 +41,12 @@ public class PatientResourceProvider extends AbstractJaxRsResourceProvider<Patie
         }
         Optional<PatientRecord> patientRecord = repo.getPatientById(pid);
         if (patientRecord.isPresent()) {
-            return patientRecord.get().toPatient();
+            Patient res = patientRecord.get().toPatient();
+            List<AddressRecord> addresses = repo.getPatientAddresses(pid);
+            if( !addresses.isEmpty() ) {
+                res.setAddress(addresses.stream().map(a->a.toAddress()).collect(Collectors.toList()));
+            }
+            return res;
         } else {
             throw new ResourceNotFoundException(theId);
         }
