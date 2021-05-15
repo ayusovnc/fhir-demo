@@ -26,7 +26,7 @@ public record PatientRecord(Integer id, String first_name, String last_name, Str
                 case "M" -> AdministrativeGender.MALE;
                 case "O" -> AdministrativeGender.OTHER;
                 case "N" -> AdministrativeGender.UNKNOWN;
-                case "T" -> AdministrativeGender.FEMALE; // ?
+                case "T" -> AdministrativeGender.OTHER; // ?
                 default -> AdministrativeGender.NULL;
             };
             res.setGender(agender);

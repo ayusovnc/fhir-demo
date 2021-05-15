@@ -51,6 +51,7 @@ public class PatientResourceProvider extends AbstractJaxRsResourceProvider<Patie
             throw new ResourceNotFoundException(theId);
         }
     }
+    
     @Override
     public Class<Patient> getResourceType() {
         return Patient.class;
