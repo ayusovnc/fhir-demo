@@ -17,6 +17,8 @@
 	  <maven.compiler.source>16</maven.compiler.source>
 	  <maven.compiler.target>16</maven.compiler.target>
 	  <slf4jVersion>1.7.30</slf4jVersion>
+	  <!-- That version works! 3.13.3 does not. TODO: find out why. -->
+	  <snowflake.driver.version>3.10.3</snowflake.driver.version> 
   	</properties>
 
 	<dependencies>
@@ -79,7 +81,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>net.snowflake</groupId>
+			<artifactId>snowflake-jdbc</artifactId>
+			<scope>runtime</scope>
+			<version>${snowflake.driver.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>

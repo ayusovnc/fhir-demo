@@ -1,0 +1,13 @@
+management:
+  security:
+    enabled: false
+logging:
+  level:
+    ca.uhn.fhir.jaxrs: debug
+
+spring:
+  datasource:
+    url: "jdbc:mysql://${MYSQL_HOST:localhost}:3306/navcan_development"
+    username: root
+    password:
+    driver-class-name: com.mysql.jdbc.Driver

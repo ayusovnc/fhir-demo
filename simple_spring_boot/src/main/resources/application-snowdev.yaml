@@ -1,0 +1,16 @@
+management:
+  security:
+    enabled: false
+logging:
+  level:
+    ca.uhn.fhir.jaxrs: debug
+
+spring:
+  datasource:
+    url: "jdbc:snowflake://nc94201.us-east-1.snowflakecomputing.com/?warehouse=NC_DW_INTEROPS&db=NC_GC&schema=GC"
+#    db: "NC_GC"
+#    schema: "GC"
+#    warehouse: "NC_DW_INTEROPS"
+    username: ${SF_USER}
+    password: ${SF_PASSWORD}
+    driver-class-name: net.snowflake.client.jdbc.SnowflakeDriver

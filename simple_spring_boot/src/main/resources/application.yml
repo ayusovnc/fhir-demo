@@ -4,9 +4,9 @@ hapi:
     server:
       path: /fhir/*
     rest:
-      server-name: hapi-fhir-spring-boot-sample-server-jersey
+      server-name: hapi-fhir-demo
       server-version: 1.0.0
-      implementation-description: Spring Boot Jersey Server Sample
+      implementation-description: FHIR demo server
       default-response-encoding: json
       e-tag-support: enabled
       default-pretty-print: true
@@ -16,14 +16,4 @@ hapi:
 management:
   security:
     enabled: false
-logging:
-  level:
-    ca.uhn.fhir.jaxrs: debug
 
-
-spring:
-  datasource:
-    url: "jdbc:mysql://${MYSQL_HOST:localhost}:3306/navcan_development"
-    username: root
-    password:
-    driver-class-name: com.mysql.jdbc.Driver
