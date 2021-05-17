@@ -2,10 +2,10 @@ package com.navigatingcance.fhir.provider.patient;
 
 import java.util.List;
 
-import org.hl7.fhir.dstu3.model.Address;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.Address.AddressType;
-import org.hl7.fhir.dstu3.model.Address.AddressUse;
+import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.Address.AddressType;
+import org.hl7.fhir.r4.model.Address.AddressUse;
 
 public record AddressRecord(
     String street_address_line1, String street_address_line2,

@@ -3,12 +3,12 @@ package com.navigatingcance.fhir.provider.patient;
 import java.util.Date;
 import java.util.List;
 
-import org.hl7.fhir.dstu3.model.ContactPoint;
-import org.hl7.fhir.dstu3.model.HumanName;
-import org.hl7.fhir.dstu3.model.Patient;
-import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointSystem;
-import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 
 public record PatientRecord(Integer id, String first_name, String last_name, String gender, Date birthdate,
         String race_codes, String ethnicity_key, String home_phone_number, String work_phone_number,

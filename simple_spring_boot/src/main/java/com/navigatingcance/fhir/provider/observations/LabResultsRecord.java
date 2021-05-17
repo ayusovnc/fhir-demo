@@ -5,12 +5,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.DateTimeType;
-import org.hl7.fhir.dstu3.model.Observation;
-import org.hl7.fhir.dstu3.model.Quantity;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.Observation.ObservationStatus;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Quantity;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 
 public record LabResultsRecord(Integer id, Integer clinic_id, Integer person_id, String external_id, String loinc_code,
         String quantity, String unit, String interpretation_concept, Date performed_on, String group_identifier,
