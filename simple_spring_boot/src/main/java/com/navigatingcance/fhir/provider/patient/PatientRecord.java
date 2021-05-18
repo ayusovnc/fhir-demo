@@ -1,6 +1,7 @@
 package com.navigatingcance.fhir.provider.patient;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.ContactPoint;
@@ -36,20 +37,30 @@ public record PatientRecord(Integer id, String first_name, String last_name, Str
         // TODO. Race and etnicity not included in the base Patient FHIR resource
 
         // phones and email
-        ContactPoint homePhone = new ContactPoint();
-        homePhone.setSystem(ContactPointSystem.PHONE);
-        homePhone.setValue(home_phone_number);
-        homePhone.setUse(ContactPointUse.HOME);
-        ContactPoint workPhone = new ContactPoint();
-        workPhone.setSystem(ContactPointSystem.PHONE);
-        workPhone.setValue(work_phone_number);
-        workPhone.setUse(ContactPointUse.WORK);
-        ContactPoint mobilePhone = new ContactPoint();
-        mobilePhone.setSystem(ContactPointSystem.PHONE);
-        mobilePhone.setValue(cell_phone_number);
-        mobilePhone.setUse(ContactPointUse.MOBILE);
+        List<ContactPoint> contactPoins = new LinkedList<>();
+        if( home_phone_number != null ) {
+            ContactPoint homePhone = new ContactPoint();
+            homePhone.setSystem(ContactPointSystem.PHONE);
+            homePhone.setValue(home_phone_number);
+            homePhone.setUse(ContactPointUse.HOME);
+            contactPoins.add(homePhone);
+        }
+        if( work_phone_number != null ) {
+            ContactPoint workPhone = new ContactPoint();
+            workPhone.setSystem(ContactPointSystem.PHONE);
+            workPhone.setValue(work_phone_number);
+            workPhone.setUse(ContactPointUse.WORK);
+            contactPoins.add(workPhone);
+        }
+        if(cell_phone_number != null) {
+            ContactPoint mobilePhone = new ContactPoint();
+            mobilePhone.setSystem(ContactPointSystem.PHONE);
+            mobilePhone.setValue(cell_phone_number);
+            mobilePhone.setUse(ContactPointUse.MOBILE);
+            contactPoins.add(mobilePhone);
+        }
         // TODO. email goes here as well
-        res.setTelecom(List.of(homePhone, workPhone, mobilePhone));
+        res.setTelecom(contactPoins);
 
         return res;
     }
