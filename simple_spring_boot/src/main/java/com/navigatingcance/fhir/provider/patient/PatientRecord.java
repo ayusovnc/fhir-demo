@@ -4,16 +4,25 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.navigatingcance.fhir.converters.GenderConverter;
+import com.navigatingcance.fhir.converters.RaceConverter;
+
 import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.HumanName;
-import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Enumeration;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.r4.model.codesystems.V3Race;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Patient;
 
 public record PatientRecord(Integer id, String first_name, String last_name, String gender, Date birthdate,
         String race_codes, String ethnicity_key, String home_phone_number, String work_phone_number,
         String cell_phone_number, String preferred_language_code) {
+
+    static Logger log = LoggerFactory.getLogger(PatientRecord.class);
 
     public Patient toPatient() {
         Patient res = new Patient();
@@ -22,19 +31,26 @@ public record PatientRecord(Integer id, String first_name, String last_name, Str
         name.setFamily(last_name());
         res.setName(List.of(name));
         if( gender != null ) {
-            AdministrativeGender agender = switch(gender) {
-                case "F" -> AdministrativeGender.FEMALE;
-                case "M" -> AdministrativeGender.MALE;
-                case "O" -> AdministrativeGender.OTHER;
-                case "N" -> AdministrativeGender.UNKNOWN;
-                case "T" -> AdministrativeGender.OTHER; // ?
-                default -> AdministrativeGender.NULL;
-            };
-            res.setGender(agender);
+            res.setGender(GenderConverter.genderFromGCCode(gender));
         }
         res.setBirthDate(birthdate);
 
-        // TODO. Race and etnicity not included in the base Patient FHIR resource
+        // Race and ethnicity not included in the base Patient FHIR resource,
+        // race and ethnicity shows as extension
+        if( race_codes != null ) {
+            String[] codes = race_codes.split(",");
+            for(String codeStr: codes) {
+                Extension ext = new Extension();
+                Enumeration<V3Race> code = RaceConverter.raceFromCDCCodeSetV1(codeStr.trim());
+                if( code == null || code.getValue() == null ) {
+                    log.warn("failed to decode race code {}", codeStr);
+                    continue;
+                }
+                ext.setUrl(code.getSystem());
+                ext.setValue(code);
+                res.addExtension(ext);
+            }
+        }
 
         // phones and email
         List<ContactPoint> contactPoins = new LinkedList<>();
