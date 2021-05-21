@@ -37,4 +37,16 @@ for i in `seq 1 2`; do
 done
 ```
 
+# Examples
 
+```
+curl 'http://localhost:8080/fhir/Observation?subject=19&category=laboratory'
+```
+
+```
+curl 'http://localhost:8080/fhir/Observation?subject=19&code=26981-9'
+```
+
+```
+curl 'http://localhost:8080/fhir/Patient/19'
+```
