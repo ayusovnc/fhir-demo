@@ -41,9 +41,9 @@ public record LabResultsRecord(Integer id, Integer clinic_id, Integer person_id,
         res.getValueQuantity().setCode(unit);
         res.getValueQuantity().setUnit(unit);
         res.getValueQuantity().setValue(new BigDecimal(quantity));
+        CodeableConcept group = res.addCategory().setText(group_identifier);
         ObservationCategory obsCat = groupNameToObsCategory(group_identifier);
         if( obsCat != ObservationCategory.NULL) {
-            CodeableConcept group = res.addCategory().setText(group_identifier);
             Coding groupCoding = res.addCategory().setText(group_identifier).addCoding();
             groupCoding.setSystem(obsCat.getSystem());
             groupCoding.setCode(obsCat.toCode());
