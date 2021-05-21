@@ -39,6 +39,14 @@ done
 
 # Examples
 
+## Patient
+
+```
+curl 'http://localhost:8080/fhir/Patient/19'
+```
+
+## Lab results
+
 ```
 curl 'http://localhost:8080/fhir/Observation?subject=19&category=laboratory'
 ```
@@ -47,6 +55,9 @@ curl 'http://localhost:8080/fhir/Observation?subject=19&category=laboratory'
 curl 'http://localhost:8080/fhir/Observation?subject=19&code=26981-9'
 ```
 
+## Blood pressure
+
 ```
-curl 'http://localhost:8080/fhir/Patient/19'
+curl 'http://localhost:8080/fhir/Observation?subject=19&category=vital-signs&code=8462-4,8480-6'
 ```
+
