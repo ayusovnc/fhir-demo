@@ -48,6 +48,7 @@ curl 'http://localhost:8080/fhir/Patient/19'
 ## Lab results
 
 ```
+curl 'http://localhost:8080/fhir/Observation?subject=597878'
 curl 'http://localhost:8080/fhir/Observation?subject=19&category=laboratory'
 ```
 
