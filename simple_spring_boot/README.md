@@ -30,10 +30,20 @@ mvn spring-boot:run -Dspring-boot.run.profiles=snowdev
 
 There are scripts checked in `perf_test` directory that can be used to test the service performance.
 
-Scripts can be run concurrently with commands like this:
+Scripts can be run concurrently with commands like this.
+This example runs 2 clients concurrently, each one making 1000 calls.
+The results of both runs are getting logged in the same log file.
 ```
 for i in `seq 1 2`; do
     sh -c ./get_1000_random_patients.sh >> patient_get_1000_thr_2.tsv  &
+done
+```
+Or like this.
+This example runs 10 client concurrently, each making 100 calls.
+The timing data of each run is logged in it's own file.
+```
+for i in `seq 1 10`; do
+   sh -c ./get_100_random_patients.sh >> patient_get_100_thr_10_${i}.tsv &
 done
 ```
 
