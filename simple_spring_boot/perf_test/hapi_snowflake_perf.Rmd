@@ -1,0 +1,103 @@
+---
+title: "Snowflake performance"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressMessages({
+  library(ggplot2)
+  library(dplyr)
+})
+```
+
+# Inroduction
+
+This document shows some results of the performance testing of the HR FHIR service running against `Showflake` backend.
+Snowflake backend was running on `X-Small` hardware at the time of the test. 
+In order to limit our cost only a limited number of tests have been done as of May 18-21.
+All tests run a sequence of `GET Patient/<pid>` calls where patient ID (`pid`) was selected from a list 
+of valid staging patient IDs at random.
+
+# 10 concurrent clients running 100 request each
+
+```{r include=FALSE}
+read_run <- function(n) {
+  d <- read.table(paste0("patient_get_100_thr_10_",n,".tsv.gz"), col.names=c("pid","time_connect","time_starttransfer","time_total"))
+  d$client <- n
+  d$seq <- 1:nrow(d)
+  d
+}
+d10 <- bind_rows(lapply(1:10,read_run))
+d10$pid <- as.factor(d10$pid)
+d10$client <- as.factor(d10$client)
+```
+
+Here is a graph that shows change in latencies of 10 clients running concurrently against the HR FHIR server.
+
+```{r, echo=FALSE}
+ggplot(d10, aes(seq,time_total,col=client)) + geom_smooth(method="loess", formula=y~x) + geom_jitter() + 
+  ylab("Latency in seconds") + xlab("test order")
+```
+
+What we can see there:
+
+- Initial calls can take multiple seconds to execute. Latencies as high as 30 seconds where observed in ad hoc tests
+- After the warm up time has passed latencies hover around 1 seconds with occasional spikes in the range of a few seconds.
+- At the end of the 100 tests run there was a consistent rise in latencies
+
+```{r, echo=FALSE}
+only_middle <- d10$seq>5 & d10$seq<90
+```
+
+If we ignore the warm up period and the slowdown at the tail, the average latencies across all 10 clients are 
+`r round(mean(d10$time_total[only_middle]),2)` and median time is `r round(median(d10$time_total[only_middle]),digits=2)`.
+
+# Single threaded test
+
+```{r, echo=FALSE}
+d1 <- read.table("patient_get_1000_thr_1.tsv.gz", col.names=c("pid","time_connect","time_starttransfer","time_total"))
+d1$seq <- 1:nrow(d1)
+```
+
+Here is a graph that shows change in latencies of 1 client running against the HR FHIR server.
+
+```{r, echo=FALSE}
+ggplot(d1, aes(seq, time_total)) + geom_smooth(method="loess", formula=y~x) + geom_jitter() +
+    ylab("Latency in seconds") + xlab("test order")
+```
+
+There are some similarities to what we see on the plot of the higher concurrency test results 
+and some things are different:
+
+- Initial calls can take multiple seconds to execute
+- After the warm up time has passed latencies hover around 0.5 seconds with occasional spikes in the range of a few seconds.
+- There is no rise in latencies at the end of the test or after 100 call execution
+
+If we ignore the warm up period, the average latencies in this test are 
+`r round(mean(d1$time_total[d1$seq>10]),2)` and median time is `r round(median(d1$time_total[d1$seq>10]),digits=2)`.
+
+# Conclusions and TODOs
+
+It appears that the best latencies we can get from a service running against Snowfloke current production setup
+can not be any better that 0.5 seconds on average. It also appears that 10 concurrent clients performance
+is worse with latencies going up to 1 second on average.
+One second average service latency does not seems acceptable. 
+The best case of a half a second latency is barely acceptable as well.
+
+## TODO
+
+In order to improve the service performance these are the performance
+improvements options that we can consider and implement. 
+Performance tests must be re-run after the changes have been made to estimate the impact of the change.
+
+- Use Warehouse running on more powerful hardware
+- Add cacheing to the HR FHIR service
+- Switch backend to GC database
+
+
+
