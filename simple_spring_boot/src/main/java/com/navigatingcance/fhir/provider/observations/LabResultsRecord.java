@@ -49,10 +49,10 @@ public record LabResultsRecord(Integer id, Integer clinic_id, Integer person_id,
         } catch(Exception ex) {
             log.error("invalid quantity value {} in clinic_test_results {}", quantity, id); 
         }
-        res.addCategory().setText(group_identifier);
+        CodeableConcept cat = res.addCategory().setText(group_identifier);
         ObservationCategory obsCat = groupNameToObsCategory(group_identifier);
-        if( obsCat != ObservationCategory.NULL) {
-            Coding groupCoding = res.addCategory().setText(group_identifier).addCoding();
+        if( obsCat != ObservationCategory.NULL ) {
+            Coding groupCoding = cat.addCoding();
             groupCoding.setSystem(obsCat.getSystem());
             groupCoding.setCode(obsCat.toCode());
         }
@@ -70,10 +70,6 @@ public record LabResultsRecord(Integer id, Integer clinic_id, Integer person_id,
         interpr.setText(interpretation_concept);
         res.addInterpretation(interpr);
         // TODO. Add coding https://www.hl7.org/fhir/valueset-observation-category.html
-
-        // Component https://www.hl7.org/fhir/observation-definitions.html#Observation.component
-        res.addComponent().setValue(new StringType(component_name) );
-        // TODO. Add component coding 
 
         return res;
     }
