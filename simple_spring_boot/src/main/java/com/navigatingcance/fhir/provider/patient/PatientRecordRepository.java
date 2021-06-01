@@ -15,7 +15,10 @@ interface PatientRecordRepository extends CrudRepository<PatientRecord, Integer>
             """)
     List<PatientRecord> searchPatients(@Param("age") int age);
 
-    @Query("SELECT * FROM patient_informations where id = :pid")
+    @Query("""
+            SELECT * FROM patient_informations 
+            where person_id = :pid
+            """)
     Optional<PatientRecord> getPatientById(@Param("pid") Integer pid);
 
     @Query("SELECT * FROM addresses WHERE addressable_id = :pid")
