@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.navigatingcance.fhir.service.ConfigService;
+
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Observation;
@@ -32,6 +34,9 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
 
     @Autowired
     private ObservationsRepository repo;
+
+    @Autowired 
+    private ConfigService configService;
 
     public ObservationResourceProvider(FhirContext fhirContext) {
         super(fhirContext);

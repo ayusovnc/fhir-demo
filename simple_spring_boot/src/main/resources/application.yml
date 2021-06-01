@@ -40,3 +40,7 @@ spring:
       max-active: 200
       max-idle: 15
       min-idle: 8
+
+configService:
+    inmem: true
+
