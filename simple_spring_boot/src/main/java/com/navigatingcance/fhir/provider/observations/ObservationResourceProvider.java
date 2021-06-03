@@ -79,7 +79,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
         try {
             Quantity q = new Quantity();
             q.setValue(new BigDecimal(rec.quantity()));
-            q.setUnit(rec.unit());
+            q.setCode(rec.unit());
             value = q;
         } catch (Exception ex) {
             StringType ts = new StringType(rec.quantity());
