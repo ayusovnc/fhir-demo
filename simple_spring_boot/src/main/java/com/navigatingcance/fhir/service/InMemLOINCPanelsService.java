@@ -68,7 +68,7 @@ public class InMemLOINCPanelsService implements CodeService {
                 codes.put(parent, new HashSet<>());
             }
             codes.get(parent).add(child);
-            String name = values[6].replace('"', ' ').strip();
+            String name = values[2].replace('"', ' ').strip();
             names.put(parent, name);
         });
         return new LOINCData(codes, names);

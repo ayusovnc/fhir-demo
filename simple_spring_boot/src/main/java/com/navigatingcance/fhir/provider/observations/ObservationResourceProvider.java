@@ -230,25 +230,28 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
         // Gather panel codes, if any
         Set<String> panels = wantedCodesSet.stream().filter(c -> LOINCPanelsService.isKnown(c))
                 .collect(Collectors.toSet());
-        Set<String> allPanelCodes = panels.stream().map(c->LOINCPanelsService.getLOINCCodes(c)).flatMap(Set::stream).collect(Collectors.toSet());
+        Set<String> allPanelCodes = panels.stream().map(c -> LOINCPanelsService.getLOINCCodes(c)).flatMap(Set::stream)
+                .collect(Collectors.toSet());
         log.debug("panels {} codes in panels {}", panels.size(), allPanelCodes.size());
 
         List<LabResultsRecord> labResult = repo.getLabResultsForPerson(pid);
         log.debug("lab results found {}", labResult.size());
-        List<Observation> nonPanelRes = labResult.stream().filter(o -> !allPanelCodes.contains(o.loinc_code()))
+        List<Observation> allRes = labResult.stream().filter(o -> !allPanelCodes.contains(o.loinc_code()))
                 .map(o -> recordToObservation(o)).collect(Collectors.toList());
 
         List<Observation> res;
         if (code == null) {
-            res = nonPanelRes;
-            log.debug("only non-panel results {}", res.size());
+            res = allRes;
+            log.debug("no code filtering {}", res.size());
         } else {
+            List<Observation> nonPanelRes = labResult.stream().filter(o -> wantedCodesSet.contains(o.loinc_code()))
+                    .map(o -> recordToObservation(o)).collect(Collectors.toList());
             List<Observation> panelRes = panels.stream()
                     .map(p -> labResultsToPanels(labResult, p, LOINCPanelsService.getLOINCCodes(p)))
                     .flatMap(List::stream).collect(Collectors.toList());
             res = new LinkedList<>(nonPanelRes);
             res.addAll(panelRes);
-            log.debug("panel results {} and non-panel results {}", panelRes.size(), nonPanelRes.size());
+            log.debug("filtered by code panel results {} and non-panel results {}", panelRes.size(), allRes.size());
         }
 
         // filter results in memory for now since this is just for one patient
