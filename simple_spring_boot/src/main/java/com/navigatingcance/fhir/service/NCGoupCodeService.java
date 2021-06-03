@@ -73,8 +73,7 @@ public class NCGoupCodeService implements CodeService {
                 codes.put(parent, new HashSet<>());
             }
             codes.get(parent).add(child);
-            String name = values[4].replace('"', ' ').strip();
-            names.put(parent, name);
+            names.put(parent, parent); // TODO. Is there a better group name?
         });
         return new NCCodeData(codes, names);
     }

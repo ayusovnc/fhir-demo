@@ -129,7 +129,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
 
     }
 
-    Observation recordToBaseObservation(LabResultsRecord rec, String panelCode) {
+    Observation recordToBaseObservation(LabResultsRecord rec, String panelCode, boolean ncCode) {
         Observation res = new Observation();
         res.setId(rec.id().toString());
         res.setSubject(new Reference("Patient/" + rec.person_id().toString())); // TODO. May be wrong. Person != Patient
@@ -141,10 +141,18 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
             // Panel coding, special case of coding
             // Example: https://www.hl7.org/fhir/observation-example-bloodpressure.html
             CodeableConcept code = new CodeableConcept();
-            code.addCoding()
-                    .setCode(panelCode).setSystem("http://loinc.org")
-                    .setDisplay(LOINCPanelsService.getName(panelCode));
             code.setTextElement(new StringType(rec.component_name()));
+            Coding cd = code.addCoding();
+            cd.setCode(panelCode);
+            String displayName;
+            if (ncCode) {
+                displayName = NCGroupsService.getName(panelCode);
+                cd.setSystem("http://navigatingcare.com");
+            } else {
+                displayName = LOINCPanelsService.getName(panelCode);
+                cd.setSystem("http://loinc.org");
+            }
+            cd.setDisplay(displayName);
             res.setCode(code);
         }
 
@@ -161,13 +169,13 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
 
     // If not a panel
     Observation recordToObservation(LabResultsRecord rec) {
-        Observation res = recordToBaseObservation(rec, null);
+        Observation res = recordToBaseObservation(rec, null, false);
         setObservationValue(rec, res);
         return res;
     }
 
     // Create one single observation record for all LOINC codes on the panel
-    List<Observation> labResultsToPanels(List<LabResultsRecord> alllabResult, String panel, Set<String> codes) {
+    List<Observation> labResultsToPanels(List<LabResultsRecord> alllabResult, String panel, Set<String> codes, boolean ncCode) {
         // Just the lab results that match the panel, grouped by date.
         // TODO. The expectation is that the panel observation are all on the same date.
         // Is that correct?
@@ -175,12 +183,12 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
         // othe better way.
         Map<Date, List<LabResultsRecord>> labsByDate = alllabResult.stream().filter(l -> codes.contains(l.loinc_code()))
                 .collect(Collectors.groupingBy(LabResultsRecord::performed_on));
-        log.debug("lab dates {} for panel {} {}", labsByDate.size(), panel, codes);
+        log.debug("distinct {} lab dates for panel {} {}", labsByDate.size(), panel, codes);
         LinkedList<Observation> res = new LinkedList<>();
         for (Date dateTaken : labsByDate.keySet()) {
             List<LabResultsRecord> labResultsOnTheDay = labsByDate.get(dateTaken);
             // There must be at least one lab record by construction
-            Observation panelObservation = recordToBaseObservation(labResultsOnTheDay.get(0), panel);
+            Observation panelObservation = recordToBaseObservation(labResultsOnTheDay.get(0), panel, ncCode);
             for (LabResultsRecord singleLabResult : labResultsOnTheDay) {
                 ObservationComponentComponent oc = new ObservationComponentComponent();
                 setObservationValue(singleLabResult, oc);
@@ -229,15 +237,20 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
         // Gather panel codes, if any
         Set<String> panels = wantedCodesSet.stream().filter(c -> LOINCPanelsService.isKnown(c))
                 .collect(Collectors.toSet());
+        Set<String> NCGroups = wantedCodesSet.stream().filter(c -> NCGroupsService.isKnown(c))
+                .collect(Collectors.toSet());
         Set<String> allPanelCodes = panels.stream().map(c -> LOINCPanelsService.getLOINCCodes(c)).flatMap(Set::stream)
                 .collect(Collectors.toSet());
-        log.debug("panels {} codes in panels {}", panels.size(), allPanelCodes.size());
+        Set<String> allNCCodes = NCGroups.stream().map(c -> NCGroupsService.getLOINCCodes(c)).flatMap(Set::stream)
+                .collect(Collectors.toSet());
+        log.debug("panels {} codes in panels {}, {} codes in NC {} groups ", panels.size(), allPanelCodes.size(),
+                allNCCodes.size(), NCGroups.size());
 
         List<LabResultsRecord> labResult = repo.getLabResultsForPerson(pid);
         log.debug("lab results found {}", labResult.size());
-        List<Observation> allRes = labResult.stream().filter(o -> !allPanelCodes.contains(o.loinc_code()))
+        List<Observation> allRes = labResult.stream()
+                .filter(o -> !(allPanelCodes.contains(o.loinc_code()) || allNCCodes.contains(o.loinc_code())))
                 .map(o -> recordToObservation(o)).collect(Collectors.toList());
-
         List<Observation> res;
         if (code == null) {
             res = allRes;
@@ -246,11 +259,17 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
             List<Observation> nonPanelRes = labResult.stream().filter(o -> wantedCodesSet.contains(o.loinc_code()))
                     .map(o -> recordToObservation(o)).collect(Collectors.toList());
             List<Observation> panelRes = panels.stream()
-                    .map(p -> labResultsToPanels(labResult, p, LOINCPanelsService.getLOINCCodes(p)))
+                    .map(p -> labResultsToPanels(labResult, p, LOINCPanelsService.getLOINCCodes(p), false))
+                    .flatMap(List::stream).collect(Collectors.toList());
+            List<Observation> NCGroupRes = NCGroups.stream()
+                    .map(p -> labResultsToPanels(labResult, p, NCGroupsService.getLOINCCodes(p), true))
                     .flatMap(List::stream).collect(Collectors.toList());
             res = new LinkedList<>(nonPanelRes);
             res.addAll(panelRes);
-            log.debug("filtered by code panel results {} and non-panel results {}", panelRes.size(), allRes.size());
+            res.addAll(NCGroupRes);
+            log.debug("filtered by code panel results {} and non-panel results {}", 
+                panelRes.size() + NCGroupRes.size(),
+                allRes.size());
         }
 
         // filter results in memory for now since this is just for one patient
