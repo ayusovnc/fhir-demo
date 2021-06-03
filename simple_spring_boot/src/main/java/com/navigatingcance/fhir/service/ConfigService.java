@@ -1,11 +1,12 @@
 package com.navigatingcance.fhir.service;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public interface ConfigService {
     public Boolean isLOINCPanel(String code);
-    public List<String> getLOINCPanelCodes(String code);
+    public Set<String> getLOINCPanelCodes(String code);
+    public String getLOINCPanelName(String code);
 }
