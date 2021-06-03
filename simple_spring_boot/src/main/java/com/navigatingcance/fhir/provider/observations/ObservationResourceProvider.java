@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.navigatingcance.fhir.service.ConfigService;
+import com.navigatingcance.fhir.service.CodeService;
 
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -50,7 +50,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
     private ObservationsRepository repo;
 
     @Autowired
-    private ConfigService configService;
+    private CodeService LOINCPanelsService;
 
     public ObservationResourceProvider(FhirContext fhirContext) {
         super(fhirContext);
@@ -138,7 +138,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
             CodeableConcept code = new CodeableConcept();
             code.addCoding()
                     .setCode(panelCode).setSystem("http://loinc.org")
-                    .setDisplay(configService.getLOINCPanelName(panelCode));
+                    .setDisplay(LOINCPanelsService.getName(panelCode));
             code.setTextElement(new StringType(rec.component_name()));
         }
 
@@ -221,7 +221,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
         Set<String> wantedCodesSet = code == null ? Set.of()
                 : code.getValuesAsQueryTokens().stream().map(c -> c.getValue()).collect(Collectors.toSet());
         // Gather panel codes, if any
-        Set<String> panels = wantedCodesSet.stream().filter(c -> configService.isLOINCPanel(c))
+        Set<String> panels = wantedCodesSet.stream().filter(c -> LOINCPanelsService.isKnown(c))
                 .collect(Collectors.toSet());
 
         List<LabResultsRecord> labResult = repo.getLabResultsForPerson(pid);
@@ -233,7 +233,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
             res = nonPanelRes;
         } else {
             List<Observation> panelRes = panels.stream()
-                    .map(p -> labResultsToPanels(labResult, p, configService.getLOINCPanelCodes(p)))
+                    .map(p -> labResultsToPanels(labResult, p, LOINCPanelsService.getLOINCCodes(p)))
                     .flatMap(Collection::stream).collect(Collectors.toList());
             res = new LinkedList<>(nonPanelRes);
             res.addAll(panelRes);

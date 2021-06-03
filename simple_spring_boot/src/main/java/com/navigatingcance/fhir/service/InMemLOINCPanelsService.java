@@ -14,14 +14,14 @@ import java.util.zip.GZIPInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InMemConfigService implements ConfigService {
+public class InMemLOINCPanelsService implements CodeService {
 
-    Logger log = LoggerFactory.getLogger(InMemConfigService.class);
+    Logger log = LoggerFactory.getLogger(InMemLOINCPanelsService.class);
 
     private Map<String, Set<String>> panelCodes;
     private Map<String, String> panelNames;
 
-    public InMemConfigService() throws Exception {
+    public InMemLOINCPanelsService() throws Exception {
         try {
             var loincData = getLOINCPanels();
             panelCodes = loincData.codes;
@@ -34,12 +34,12 @@ public class InMemConfigService implements ConfigService {
     }
 
     @Override
-    public Boolean isLOINCPanel(String code) {
+    public Boolean isKnown(String code) {
         return panelCodes.containsKey(code);
     }
 
     @Override
-    public Set<String> getLOINCPanelCodes(String code) {
+    public Set<String> getLOINCCodes(String code) {
         if (panelCodes.containsKey(code)) {
             return panelCodes.get(code);
         } else {
@@ -48,7 +48,7 @@ public class InMemConfigService implements ConfigService {
     }
 
     @Override
-    public String getLOINCPanelName(String code) {
+    public String getName(String code) {
         if (panelNames.containsKey(code)) {
             return panelNames.get(code);
         } else {

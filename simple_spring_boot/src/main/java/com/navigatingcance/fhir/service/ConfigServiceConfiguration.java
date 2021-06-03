@@ -11,11 +11,11 @@ public class ConfigServiceConfiguration {
     private Boolean useInMemoryDb;
 
     @Bean
-    public ConfigService  getConfigService() throws Exception {
+    public CodeService  getConfigService() throws Exception {
         if( useInMemoryDb ) {
-            return new InMemConfigService();
+            return new InMemLOINCPanelsService();
         } else {
-            return new DbConfigService();
+            return new DbLOINCPanelsService();
         }
     }   
 

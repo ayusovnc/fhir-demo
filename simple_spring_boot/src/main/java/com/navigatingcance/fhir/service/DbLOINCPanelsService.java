@@ -2,22 +2,22 @@ package com.navigatingcance.fhir.service;
 
 import java.util.Set;
 
-public class DbConfigService implements ConfigService {
+public class DbLOINCPanelsService implements CodeService {
 
     @Override
-    public Boolean isLOINCPanel(String code) {
+    public Boolean isKnown(String code) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Set<String> getLOINCPanelCodes(String code) {
+    public Set<String> getLOINCCodes(String code) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public String getLOINCPanelName(String code) {
+    public String getName(String code) {
         // TODO Auto-generated method stub
         return null;
     }
