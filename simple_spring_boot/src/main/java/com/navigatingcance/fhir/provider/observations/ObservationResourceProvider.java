@@ -146,6 +146,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
                     .setCode(panelCode).setSystem("http://loinc.org")
                     .setDisplay(LOINCPanelsService.getName(panelCode));
             code.setTextElement(new StringType(rec.component_name()));
+            res.setCode(code);
         }
 
         CodeableConcept cat = res.addCategory().setText(rec.group_identifier());
