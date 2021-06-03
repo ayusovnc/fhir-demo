@@ -57,10 +57,19 @@ curl 'http://localhost:8080/fhir/Patient/19'
 
 ## Lab results
 
+A real patient data:
+
 ```
 curl 'http://localhost:8080/fhir/Observation?subject=597878'
+```
+
+Test paitient from the seed GC DB data:
+
+```
 curl 'http://localhost:8080/fhir/Observation?subject=19&category=laboratory'
 ```
+
+Test patint and one specific measurement:
 
 ```
 curl 'http://localhost:8080/fhir/Observation?subject=19&code=26981-9'
@@ -68,7 +77,25 @@ curl 'http://localhost:8080/fhir/Observation?subject=19&code=26981-9'
 
 ## Blood pressure
 
+Get blood pressure as separate observations
+
 ```
 curl 'http://localhost:8080/fhir/Observation?subject=19&category=vital-signs&code=8462-4,8480-6'
+```
+
+Or getting blood pressure using LOINC panel code
+
+```
+curl 'http://localhost:8080/fhir/Observation?subject=7619025&code=85354-9'
+```
+
+## CBC panel 
+
+Get CBC panel using NC code groups
+
+NC lab groups defined here: https://docs.google.com/spreadsheets/d/1vlUE5snUBPwW4asuP7nzmD31z24U5L7TcFi3h1tEcWY/edit#gid=0
+
+```
+curl 'http://localhost:8080/fhir/Observation?subject=7619025&code=CBC'
 ```
 
