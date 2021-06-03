@@ -1,7 +1,6 @@
 package com.navigatingcance.fhir.provider.observations;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -167,25 +166,6 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
         return res;
     }
 
-    @Read
-    public Observation find(@IdParam final IdType theId) {
-        log.info("get observation called with {}", theId);
-        Integer oid;
-        try {
-            oid = Integer.parseInt(theId.getIdPart());
-        } catch (Exception ex) {
-            log.error("patient id must be a number", ex);
-            throw ex;
-        }
-
-        Optional<LabResultsRecord> labResult = repo.getLabResultsById(oid);
-        if (labResult.isPresent()) {
-            return recordToObservation(labResult.get());
-        } else {
-            throw new ResourceNotFoundException(theId);
-        }
-    }
-
     // Create one single observation record for all LOINC codes on the panel
     List<Observation> labResultsToPanels(List<LabResultsRecord> alllabResult, String panel, Set<String> codes) {
         // Just the lab results that match the panel, grouped by date.
@@ -209,6 +189,25 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
             res.add(panelObservation);
         }
         return res;
+    }
+
+    @Read
+    public Observation find(@IdParam final IdType theId) {
+        log.info("get observation called with {}", theId);
+        Integer oid;
+        try {
+            oid = Integer.parseInt(theId.getIdPart());
+        } catch (Exception ex) {
+            log.error("patient id must be a number", ex);
+            throw ex;
+        }
+
+        Optional<LabResultsRecord> labResult = repo.getLabResultsById(oid);
+        if (labResult.isPresent()) {
+            return recordToObservation(labResult.get());
+        } else {
+            throw new ResourceNotFoundException(theId);
+        }
     }
 
     @Search
