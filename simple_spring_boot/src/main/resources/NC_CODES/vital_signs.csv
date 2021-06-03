@@ -1,0 +1,78 @@
+ID,LOINC_CODE,CODE_SET_ID,GROUP_IDENTIFIER,COMPONENT_NAME,REFERENCE_VALUE_TYPE,UNIT,"REFERENCE_
+RANGE_LOW","REFERENCE_
+RANGE_HIGH",AUTO_MAP_TITLE,AUTO_ID,"truncate table taxonomy_staging.standard_references.vital_sign;
+INSERT INTO TAXONOMY_STAGING.STANDARD_REFERENCES.VITAL_SIGN
+(ID, LOINC_CODE, CODE_SET_ID, GROUP_IDENTIFIER, COMPONENT_NAME, REFERENCE_VALUE_TYPE, UNIT, REFERENCE_RANGE_LOW, REFERENCE_RANGE_HIGH) VALUES"
+1,29463-7,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body weight,numeric,kg,,,Body weight: kg,1,"('1','29463-7','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body weight','numeric','kg','',''),"
+2,29463-7,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body weight,numeric,[lb_av],,,Body weight: [lb_av],2,"('2','29463-7','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body weight','numeric','[lb_av]','',''),"
+3,29463-7,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body weight Measured,numeric,kg,,,Body weight Measured: kg,3,"('3','29463-7','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body weight Measured','numeric','kg','',''),"
+4,29463-7,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body weight Measured,numeric,[lb_av],,,Body weight Measured: [lb_av],4,"('4','29463-7','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body weight Measured','numeric','[lb_av]','',''),"
+5,29463-7,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body weight Stated,numeric,kg,,,Body weight Stated: kg,5,"('5','29463-7','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body weight Stated','numeric','kg','',''),"
+6,29463-7,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body weight Stated,numeric,[lb_av],,,Body weight Stated: [lb_av],6,"('6','29463-7','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body weight Stated','numeric','[lb_av]','',''),"
+7,46040-2,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Weight change Set,numeric,,,,Weight change Set: ,7,"('7','46040-2','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Weight change Set','numeric','','',''),"
+8,45736-6,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Weight gain [Minimum Data Set],numeric,,,,Weight gain [Minimum Data Set]: ,8,"('8','45736-6','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Weight gain [Minimum Data Set]','numeric','','',''),"
+9,45735-8,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Weight loss [Minimum Data Set],numeric,,,,Weight loss [Minimum Data Set]: ,9,"('9','45735-8','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Weight loss [Minimum Data Set]','numeric','','',''),"
+10,39156-5,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body mass index,numeric,kg/m2,18,25,Body mass index: kg/m2,10,"('10','39156-5','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body mass index','numeric','kg/m2','18','25'),"
+11,59408-5,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Oxygen saturation,numeric,%,0,100,Oxygen saturation: %,11,"('11','59408-5','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Oxygen saturation','numeric','%','0','100'),"
+12,8867-4,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Heart rate,numeric,{breaths}/min,60,100,Heart rate: {breaths}/min,12,"('12','8867-4','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Heart rate','numeric','{breaths}/min','60','100'),"
+13,69000-8,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Heart rate --sitting,numeric,{breaths}/min,60,100,Heart rate --sitting: {breaths}/min,13,"('13','69000-8','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Heart rate --sitting','numeric','{breaths}/min','60','100'),"
+14,69001-6,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Heart rate --standing,numeric,{breaths}/min,60,100,Heart rate --standing: {breaths}/min,14,"('14','69001-6','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Heart rate --standing','numeric','{breaths}/min','60','100'),"
+15,68999-2,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Heart rate --supine,numeric,{breaths}/min,60,100,Heart rate --supine: {breaths}/min,15,"('15','68999-2','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Heart rate --supine','numeric','{breaths}/min','60','100'),"
+16,9279-1,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Respiratory rate,numeric,{breaths}/min,12,20,Respiratory rate: {breaths}/min,16,"('16','9279-1','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Respiratory rate','numeric','{breaths}/min','12','20'),"
+17,8302-2,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body height,numeric,[in_us],,,Body height: [in_us],17,"('17','8302-2','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body height','numeric','[in_us]','',''),"
+18,8302-2,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body height,numeric,[ft_us],,,Body height: [ft_us],18,"('18','8302-2','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body height','numeric','[ft_us]','',''),"
+19,8302-2,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body height,numeric,cm,,,Body height: cm,19,"('19','8302-2','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body height','numeric','cm','',''),"
+20,8302-2,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body height,numeric,m,,,Body height: m,20,"('20','8302-2','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body height','numeric','m','',''),"
+21,8310-5,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body temperature,numeric,Cel,,,Body temperature: Cel,21,"('21','8310-5','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body temperature','numeric','Cel','',''),"
+22,8310-5,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body temperature,numeric,[degF],,,Body temperature: [degF],22,"('22','8310-5','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body temperature','numeric','[degF]','',''),"
+23,8462-4,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Diastolic blood pressure,numeric,mm[Hg],60,80,Diastolic blood pressure: mm[Hg],23,"('23','8462-4','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Diastolic blood pressure','numeric','mm[Hg]','60','80'),"
+24,8453-3,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Diastolic blood pressure--sitting,numeric,mm[Hg],60,80,Diastolic blood pressure--sitting: mm[Hg],24,"('24','8453-3','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Diastolic blood pressure--sitting','numeric','mm[Hg]','60','80'),"
+25,8454-1,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Diastolic blood pressure--standing,numeric,mm[Hg],60,80,Diastolic blood pressure--standing: mm[Hg],25,"('25','8454-1','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Diastolic blood pressure--standing','numeric','mm[Hg]','60','80'),"
+26,8455-8,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Diastolic blood pressure--supine,numeric,mm[Hg],60,80,Diastolic blood pressure--supine: mm[Hg],26,"('26','8455-8','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Diastolic blood pressure--supine','numeric','mm[Hg]','60','80'),"
+27,8480-6,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Systolic blood pressure,numeric,mm[Hg],90,120,Systolic blood pressure: mm[Hg],27,"('27','8480-6','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Systolic blood pressure','numeric','mm[Hg]','90','120'),"
+28,8459-0,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Systolic blood pressure--sitting,numeric,mm[Hg],90,120,Systolic blood pressure--sitting: mm[Hg],28,"('28','8459-0','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Systolic blood pressure--sitting','numeric','mm[Hg]','90','120'),"
+29,8460-8,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Systolic blood pressure--standing,numeric,mm[Hg],90,120,Systolic blood pressure--standing: mm[Hg],29,"('29','8460-8','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Systolic blood pressure--standing','numeric','mm[Hg]','90','120'),"
+30,8461-6,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Systolic blood pressure--supine,numeric,mm[Hg],90,120,Systolic blood pressure--supine: mm[Hg],30,"('30','8461-6','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Systolic blood pressure--supine','numeric','mm[Hg]','90','120'),"
+31,55284-4,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Blood pressure systolic & diastolic,text,,,,Blood pressure systolic & diastolic: ,31,"('31','55284-4','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Blood pressure systolic & diastolic','text','','',''),"
+32,3140-1,f0cb4fa4-43d9-4252-bade-a48f6c66e5e3,Vital Signs,Body surface area Derived from formula,numeric,m2,,,Body surface area Derived from formula: m2,32,"('32','3140-1','f0cb4fa4-43d9-4252-bade-a48f6c66e5e3','Vital Signs','Body surface area Derived from formula','numeric','m2','',''),"
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,
+,,,,,,,,,: ,,

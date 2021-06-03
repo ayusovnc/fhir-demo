@@ -28,6 +28,7 @@ import org.hl7.fhir.r4.model.codesystems.ObservationCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -50,7 +51,12 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
     private ObservationsRepository repo;
 
     @Autowired
+    @Qualifier("LOINCPanels")
     private CodeService LOINCPanelsService;
+
+    @Autowired
+    @Qualifier("NCGroups")
+    private CodeService NCGroupsService;
 
     public ObservationResourceProvider(FhirContext fhirContext) {
         super(fhirContext);

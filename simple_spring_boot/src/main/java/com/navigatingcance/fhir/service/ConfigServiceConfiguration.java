@@ -10,12 +10,21 @@ public class ConfigServiceConfiguration {
     @Value("${configService.inmem}")
     private Boolean useInMemoryDb;
 
-    @Bean
-    public CodeService  getConfigService() throws Exception {
+    @Bean(name = "LOINCPanels")
+    public CodeService  getLOINCConfigService() throws Exception {
         if( useInMemoryDb ) {
             return new InMemLOINCPanelsService();
         } else {
             return new DbLOINCPanelsService();
+        }
+    }   
+
+    @Bean(name = "NCGroups")
+    public CodeService  getNCConfigService() throws Exception {
+        if( useInMemoryDb ) {
+            return new NCGoupCodeService();
+        } else {
+            throw new RuntimeException("NC Codes DB service is not supported yet");
         }
     }   
 
