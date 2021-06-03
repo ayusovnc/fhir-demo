@@ -194,6 +194,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
         // othe better way.
         Map<Date, List<LabResultsRecord>> labsByDate = alllabResult.stream().filter(l -> codes.contains(l.loinc_code()))
                 .collect(Collectors.groupingBy(LabResultsRecord::performed_on));
+        log.debug("lab dates {} for panel {} {}", labsByDate.size(), panel, codes);
         LinkedList<Observation> res = new LinkedList<>();
         for (Date dateTaken : labsByDate.keySet()) {
             List<LabResultsRecord> labResultsOnTheDay = labsByDate.get(dateTaken);
@@ -206,8 +207,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
             }
             res.add(panelObservation);
         }
-        // TODO
-        return List.of();
+        return res;
     }
 
     @Search
@@ -229,20 +229,25 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
         // Gather panel codes, if any
         Set<String> panels = wantedCodesSet.stream().filter(c -> LOINCPanelsService.isKnown(c))
                 .collect(Collectors.toSet());
+        Set<String> allPanelCodes = panels.stream().map(c->LOINCPanelsService.getLOINCCodes(c)).flatMap(Set::stream).collect(Collectors.toSet());
+        log.debug("panels {} codes in panels {}", panels.size(), allPanelCodes.size());
 
         List<LabResultsRecord> labResult = repo.getLabResultsForPerson(pid);
-        List<Observation> nonPanelRes = labResult.stream().filter(o -> !panels.contains(o.loinc_code()))
+        log.debug("lab results found {}", labResult.size());
+        List<Observation> nonPanelRes = labResult.stream().filter(o -> !allPanelCodes.contains(o.loinc_code()))
                 .map(o -> recordToObservation(o)).collect(Collectors.toList());
 
         List<Observation> res;
         if (code == null) {
             res = nonPanelRes;
+            log.debug("only non-panel results {}", res.size());
         } else {
             List<Observation> panelRes = panels.stream()
                     .map(p -> labResultsToPanels(labResult, p, LOINCPanelsService.getLOINCCodes(p)))
-                    .flatMap(Collection::stream).collect(Collectors.toList());
+                    .flatMap(List::stream).collect(Collectors.toList());
             res = new LinkedList<>(nonPanelRes);
             res.addAll(panelRes);
+            log.debug("panel results {} and non-panel results {}", panelRes.size(), nonPanelRes.size());
         }
 
         // filter results in memory for now since this is just for one patient
@@ -251,6 +256,7 @@ public class ObservationResourceProvider extends AbstractJaxRsResourceProvider<O
             Predicate<CodeableConcept> catMatch = c -> c.getCoding().stream()
                     .anyMatch(cd -> cd.hasCode() && catStr.equals(cd.getCode()));
             res = res.stream().filter(o -> o.getCategory().stream().anyMatch(catMatch)).collect(Collectors.toList());
+            log.debug("after category filtering there are {} results", res.size());
         }
         return res;
     }

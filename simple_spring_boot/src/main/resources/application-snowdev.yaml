@@ -4,6 +4,7 @@ management:
 logging:
   level:
     ca.uhn.fhir.jaxrs: debug
+    com.navigatingcance.fhir: debug
 
 spring:
   datasource:
