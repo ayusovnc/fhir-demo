@@ -1,0 +1,156 @@
+---
+title: "Snowflake performance"
+output:
+  pdf_document:
+    df_print: kable
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressMessages({
+  library(ggplot2)
+  library(dplyr)
+  library(tidyr)
+  library(knitr)
+})
+```
+
+# Inroduction
+
+This document shows results of the performance testing of the HR FHIR service running against `Showflake` backend.
+This is a second attempt at performance testing.
+An instance of the warehouse `NC_DW_HEALTH_API_EXPERIMENTS` was created specifically for this test.
+The cluster was set for resizing from 1 to 10 instances.
+The tests were run on June 4 2021.
+All tests run a sequence of `GET Patient/<pid>` calls where patient ID (`pid`) was selected from a list 
+of valid staging patient IDs at random.
+
+```{r echo=FALSE}
+base_data_dir <- "/Users/ayusov/Work/data/fhir_perf_testing/NC_DW_HEALTH_API_EXPERIMENTS/max10"
+```
+
+# Single threaded test
+
+```{r, echo=FALSE}
+d1 <- read.table(
+  paste0(base_data_dir,"/patient_get_1000_thr_1.tsv"), col.names=c("pid","time_connect","time_starttransfer","time_total"))
+d1$seq <- 1:nrow(d1)
+```
+
+Here is a graph that shows change in latencies of 1 client running against the HR FHIR server.
+
+```{r, echo=FALSE}
+ggplot(d1, aes(seq, time_total)) + geom_smooth(method="loess", formula=y~x) + geom_jitter() +
+    ylab("Latency in seconds") + xlab("test order")
+```
+
+On that graph we can see:
+
+- Initial calls can take multiple seconds to execute
+- After the warm up time has passed latencies hover around 0.5 seconds with occasional spikes in the range of a few seconds.
+
+If we ignore the warm up period, the average latencies in this test are 
+`r round(mean(d1$time_total[d1$seq>10]),2)` and median time is `r round(median(d1$time_total[d1$seq>10]),digits=2)`.
+
+# Multiple concurrent clients running 100 request each
+
+```{r include=FALSE}
+read_run <- function(n, thr, base) {
+  fname <- paste0(base,"/patient_get_100_thr_",thr,"_",n,".tsv")
+  d <- read.table(fname, col.names=c("pid","time_connect","time_starttransfer","time_total"))
+  d$client <- n
+  d$seq <- 1:nrow(d)
+  d$thr <- thr
+  d
+}
+d10 <- bind_rows(lapply(1:10, read_run, 10, base_data_dir))
+d20 <- bind_rows(lapply(1:20, read_run, 20, base_data_dir))
+d2 <- bind_rows(lapply(1:2, read_run, 2, base_data_dir))
+d <- rbind(d2,d10,d20)
+d$pid <- as.factor(d$pid)
+d$client <- as.factor(d$client)
+d$thr <- as.factor(d$thr)
+```
+
+### 10 concurrent clients test
+
+Here are graphs that shows latencies of 10 clients running concurrently against the HR FHIR server.
+There is a scatter plot that shows latencies of all calls and a separate graph that shows smooth trends 
+of the min/median/max latency value across the test runs.
+
+```{r, echo=FALSE, warning=FALSE, out.width="50%"}
+d %>% filter(thr==10) %>%
+ggplot(aes(seq,time_total,col=client)) + geom_jitter() + 
+  ylab("Latency in seconds") + xlab("test order") + ggtitle("All latencies")
+d %>% filter(thr==10) %>% group_by(seq) %>% 
+  summarize(median=median(time_total),max=max(time_total),min=min(time_total)) %>% ungroup %>%
+  pivot_longer(cols=!seq, names_to = "min/median/max", values_to = "latency") %>%
+  ggplot(aes(x=seq)) + geom_smooth(aes(seq, latency, col=`min/median/max`), method="loess", formula=y~x, se=FALSE) +
+  ylab("Latency in seconds") + xlab("test order") + ggtitle("Smooth aggregated latencies")
+```
+
+### 20 concurrent clients test
+
+Similarly here are graphs that show latencies of 20 clients running concurrently against the HR FHIR server.
+
+```{r, echo=FALSE, warning=FALSE, out.width="50%"}
+d %>% filter(thr==20) %>%
+ggplot(aes(seq,time_total,col=client)) + geom_smooth(method="loess", formula=y~x) + geom_jitter() + 
+  ylab("Latency in seconds") + xlab("test order") + ggtitle("All latencies")
+d %>% filter(thr==20) %>% group_by(seq) %>% 
+  summarize(median=median(time_total),max=max(time_total),min=min(time_total)) %>% ungroup %>%
+  pivot_longer(cols=!seq, names_to = "min/median/max", values_to = "latency") %>%
+  ggplot(aes(x=seq)) + geom_smooth(aes(seq, latency, col=`min/median/max`), method="loess", formula=y~x, se=FALSE) +
+  ylab("Latency in seconds") + xlab("test order") + ggtitle("Smooth aggregated latencies")
+```
+
+What we can see there:
+
+- Initial calls can take multiple seconds to execute. Latencies as high as 30 seconds where observed in ad hoc tests on initial calls after a period of inactivity
+- After the warm up time has passed latencies hover around 1 or 2 seconds with occasional spikes in the range of a few seconds.
+- At the end of the test run maximum and median latencies seems to have been improving. That is likely due to the DW cluster autoscaling bringing in more servers to the cluster
+
+
+\pagebreak
+## The test summary numbers
+
+```{r, echo=FALSE}
+test_summary <- data.frame(
+  `Test type` = c("1 thread", "10 threads", "20 threads"),
+  `Average time`=c(round(mean(d1$time_total[d1$seq>5]),2), 
+                   round(mean(d10$time_total[d1$seq>5]),2), 
+                   round(mean(d20$time_total[d20$seq>5]),2)),
+  `Median time`=c(round(median(d1$time_total[d1$seq>5]),2), 
+                   round(median(d10$time_total[d1$seq>5]),2), 
+                   round(median(d20$time_total[d20$seq>5]),2))
+)
+```
+
+
+```{r echo=FALSE}
+test_summary
+```
+
+# Conclusions and TODOs
+
+It appears that the best latencies we can get from a service running against Snowfloke 
+can not be any better that 0.5 seconds on average. It also appears that 10 concurrent clients performance
+is worse with latencies going up to 1 second on average. 
+The 20 concurrent clients latencies are progressively wores.
+Even one second average service latency does not seem acceptable. 
+The best case of a half a second latency is barely acceptable as well.
+
+## TODO
+
+In order to improve the service performance these are the performance
+improvements options that we can consider and implement. 
+Performance tests must be re-run after the changes have been made to estimate the impact of the change.
+
+- Add caching to the HR FHIR service
+- Use different backend
+
+
+
