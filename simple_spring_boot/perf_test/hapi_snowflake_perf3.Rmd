@@ -1,0 +1,104 @@
+---
+title: "Snowflake performance"
+output:
+  pdf_document:
+    df_print: kable
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressMessages({
+  library(ggplot2)
+  library(dplyr)
+  library(tidyr)
+  library(knitr)
+})
+```
+
+# Inroduction
+
+This document shows results of the performance testing of the HR FHIR service running against `Showflake` backend.
+The same set of tests was run against different configurations of the Snowflake data warehouse.
+Three different configurations were tested.
+
+- base `xsmall` backend
+- auto-scaling `xsmall` backend with 1 to 10 `xsmall` servers
+- `xlarge` backend
+
+All tests run a sequence of `GET Patient/<pid>` calls where patient ID (`pid`) was selected from a list 
+of valid staging patient IDs at random.
+The number of concurrent clients running the tests was varied from 1 to 20.
+
+```{r echo=FALSE}
+max10_data_dir <- "/Users/ayusov/Work/data/fhir_perf_testing/NC_DW_HEALTH_API_EXPERIMENTS/max10"
+xsmall_data_dir <- "/Users/ayusov/Work/data/fhir_perf_testing/NC_DW_HEALTH_API_EXPERIMENTS/x-small"
+xlarge_data_dir <- "/Users/ayusov/Work/data/fhir_perf_testing/NC_DW_HEALTH_API_EXPERIMENTS/xlarge"
+```
+
+
+```{r include=FALSE}
+read_file <- function(fname, n, thr) {
+  d <- read.table(fname, col.names=c("pid","time_connect","time_starttransfer","time_total"))
+  d$client <- n
+  d$seq <- 1:nrow(d)
+  d$thr <- thr
+  d
+}
+read_run <- function(n, thr, base) {
+  fname <- paste0(base,"/patient_get_100_thr_",thr,"_",n,".tsv")
+  read_file(fname, n, thr)
+}
+read_data <- function(base_data_dir) {
+  d10 <- bind_rows(lapply(1:10, read_run, 10, base_data_dir))
+  d20 <- bind_rows(lapply(1:20, read_run, 20, base_data_dir))
+  d2 <- bind_rows(lapply(1:2, read_run, 2, base_data_dir))
+#  d11 <- read_file(paste0(base_data_dir,"/patient_get_100_thr_1.tsv"),1,1)
+  d12 <- read_file(paste0(base_data_dir,"/patient_get_1000_thr_1.tsv"),1,1)
+  d <- rbind(d2,d10,d20,d12)
+  d$pid <- as.factor(d$pid)
+  d$thr <- as.factor(d$thr)
+  s1 <- d %>% group_by(thr, seq) %>% 
+          summarize(median=median(time_total),max=max(time_total),min=min(time_total),.groups="drop") %>%
+          pivot_longer(!c(thr,seq), names_to="client", values_to="time_total")
+  s2 <- d %>% group_by(thr) %>% 
+          summarize(median=median(time_total),max=max(time_total),min=min(time_total),.groups="drop") %>%
+          pivot_longer(!thr, names_to="client", values_to="time_total")
+  d$client <- as.character(d$client)
+  res <- bind_rows(d, s1, s2)
+  res$client <- as.factor(res$client)
+  res
+}
+```
+
+# Tests summary statistics
+
+```{r, echo=FALSE}
+d_max10 = read_data(max10_data_dir)
+d_xsmall = read_data(xsmall_data_dir)
+d_xlarge = read_data(xlarge_data_dir)
+```
+
+### `xsmall` cluster
+
+```{r, echo=FALSE}
+d_xsmall %>% filter(is.na(seq)) %>% select(client, clients=thr, time_total) %>% pivot_wider(names_from=client, values_from=time_total)
+```
+
+### Autoscaling `xsmall` cluster
+
+```{r, echo=FALSE}
+d_max10 %>% filter(is.na(seq)) %>% select(client, clients=thr, time_total) %>% pivot_wider(names_from=client, values_from=time_total)
+```
+
+
+### `xlarge` cluster
+
+```{r, echo=FALSE}
+d_xlarge %>% filter(is.na(seq)) %>% select(client, clients=thr, time_total) %>% pivot_wider(names_from=client, values_from=time_total)
+```
+
+
+
